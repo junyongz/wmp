@@ -6,6 +6,7 @@ import { Container, Row, Col, Table, Button } from 'react-bootstrap'
 
 import StockListItems from './StockListItems'
 import StockAddingModal from './StockAddingModal'
+import StockViewModal from './StockViewModal'
 // import { add } from '../features/stockSlicer'
 
 const stockReducer = (state, action) => {
@@ -51,17 +52,24 @@ export default function StockList() {
     // stocks
     const [items, dispatch] = useReducer(stockReducer, []);
 
+    const [viewItem, setViewItem] = useState({});
+
     // const items = useSelector((state) => state.stock.items);
     // const dispatch = useDispatch()
 
     // modal
     const [show, setShow] = useState(false);
 
+    const [showView, setShowView] = useState(false);
+
     return (
         <Container fluid="xl">
             <Row>
                 <Col>
                     <StockAddingModal show={show} setShow={setShow} items={items} dispatch={dispatch}/>
+                </Col>
+                <Col>
+                    <StockViewModal showView={showView} setShowView={setShowView} item={viewItem}/>
                 </Col>
             </Row>
             <Row className="mb-2 float-right">
@@ -87,7 +95,8 @@ export default function StockList() {
                             </tr>
                         </thead>
                         <tbody>
-                            <StockListItems items={ items }/>
+                            <StockListItems items={ items } showView={showView} 
+                                setShowView={setShowView} setViewItem={ setViewItem }/>
                         </tbody>
                     </Table>
                 </Col>
