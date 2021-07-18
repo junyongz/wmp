@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Modal, Container, Row, Col, Button } from 'react-bootstrap'
+import DividendAddingModal from './DividendAddingModal';
 
 export default function StockViewModal(props) {
 
@@ -8,6 +9,8 @@ export default function StockViewModal(props) {
 
     const [dividendAmount, setDividendAmount] = useState(0.0);
     const [dividendCurrency, setDividendCurrency] = useState('');
+
+    const [showDividendAdd, setShowDividendAdd] = useState(false);
 
     const {
         code, name, marketPlace, currency,
@@ -20,7 +23,12 @@ export default function StockViewModal(props) {
         setShowView(false);
     };
 
-    console.log(item);
+    const dividendAdded = (divd) => {
+        setDividendAmount(dividendAmount + divd.amount);
+        if (dividendCurrency === '') {
+            setDividendCurrency(divd.currency);
+        }
+    }
 
     // fetch data
     useEffect(() => {
@@ -52,6 +60,8 @@ export default function StockViewModal(props) {
             </Modal.Header>
             <Modal.Body>
                 <Container fluid>
+                    <Row><Col><DividendAddingModal showDividendAdd={showDividendAdd} setShowDividendAdd={setShowDividendAdd} 
+                                    dividendAdded={dividendAdded} stock={item}/></Col></Row>
                     <Row className="shadow-sm">
                         <Col>
                             <p>Code</p>
@@ -110,7 +120,10 @@ export default function StockViewModal(props) {
                 </Container>
             </Modal.Body>
             <Modal.Footer>
-            <Button variant="secondary" onClick={ handleClose }>
+            <Button variant="secondary" onClick={ () => setShowDividendAdd(true) }>
+                Add Dividend
+            </Button>
+            <Button variant="primart" onClick={ handleClose }>
                 Close
             </Button>
             </Modal.Footer>
