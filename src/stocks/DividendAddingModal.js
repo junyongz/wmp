@@ -1,25 +1,12 @@
 import { useState, useRef } from 'react'
 import { Modal, Form, Row, Col, Button } from 'react-bootstrap'
 
+import getTodayDate from '../features/todayDate'
+
 export default function DividendAddingModal(props) {
 
     // for creating dividend
     const { showDividendAdd, setShowDividendAdd, dividendAdded, stock } = props;
-
-    const getTodayDate = () => {
-        const appendZeroIfOneDigit = (v) => {
-            if (v.length == 1) {
-                return "0" + v;
-            }
-            return v;
-        };
-
-        const todayDate = new Date();
-
-        return todayDate.getFullYear() + "-" +
-            appendZeroIfOneDigit((todayDate.getMonth()+1).toString()) + "-" +
-            appendZeroIfOneDigit(todayDate.getDate().toString());
-    }
 
     const initalState = {
         stockId: stock.id, currency: "SGD", amount: "", addedDate: getTodayDate()

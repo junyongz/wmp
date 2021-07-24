@@ -1,26 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { Modal, Form, Row, Col, Button } from 'react-bootstrap'
-import axios from 'axios'
+
+import getTodayDate from '../features/todayDate'
 
 export default function StockAddingModal(props) {
 
     // for creating stock
     const { dispatch, show, setShow } = props;
-
-    const getTodayDate = () => {
-        const appendZeroIfOneDigit = (v) => {
-            if (v.length == 1) {
-                return "0" + v;
-            }
-            return v;
-        };
-
-        const todayDate = new Date();
-
-        return todayDate.getFullYear() + "-" +
-            appendZeroIfOneDigit((todayDate.getMonth()+1).toString()) + "-" +
-            appendZeroIfOneDigit(todayDate.getDate().toString());
-    }
 
     const initalState = {
         code: "", name: "", marketPlace: "SGX", currency: "SGD",
@@ -95,16 +81,26 @@ export default function StockAddingModal(props) {
         var form = formRef.current;
         if (form.checkValidity() === true) {
             // call API then call dispatch to update UI
-            axios.post('http://localhost:8080/stocks', {...formState}, {headers: {'content-type': 'application/json'}})
-                .then(res => {
-                    dispatch({ type: "add", stock: res.data });
-                })
-                .catch((err) => {
-                    console.error("failed to save a stock", err);
-                })
-            
-            setFormState({...initalState});
-            handleClose();
+            fetch('http://localhost:8080/stocks/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({...formState}),
+                mode: 'cors'
+            })
+            .then(res => res.json())
+            .then(stock => {
+                dispatch({ type: "add", stock: stock });
+            })
+            .catch(err => {
+                console.error('failed to create stock', err);
+                alert(err);
+            })
+            .finally(() => {
+                setFormState({...initalState});
+                handleClose();  
+            })
         }
         else {
             setValidated(true);

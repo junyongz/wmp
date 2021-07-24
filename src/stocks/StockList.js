@@ -1,5 +1,4 @@
 import { useState, useEffect, useReducer } from 'react'
-import axios from 'axios'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { Container, Row, Col, Table, Button } from 'react-bootstrap'
@@ -39,14 +38,20 @@ const stocks = [
 export default function StockList() {
 
     useEffect(() => {
-        axios.get("http://localhost:8080/stocks", {headers: {"content-type": "application/json"}})
-            .then(res => {
-                const allStocks = res.data;
-                dispatch({ type:'all', allStocks: allStocks});
+        fetch('http://localhost:8080/stocks/', {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
             })
-            .catch((err) => {
-                console.error("failed to get all stocks", err);
+            .then(res => res.json())
+            .then(allStocks => {
+                dispatch({ type: "all", allStocks: allStocks });
             })
+            .catch(err => {
+                console.error('failed to get all stocks', err);
+                alert(err);
+            });
     }, []);
 
     // stocks
