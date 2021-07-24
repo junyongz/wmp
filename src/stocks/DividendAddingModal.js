@@ -6,8 +6,23 @@ export default function DividendAddingModal(props) {
     // for creating dividend
     const { showDividendAdd, setShowDividendAdd, dividendAdded, stock } = props;
 
+    const getTodayDate = () => {
+        const appendZeroIfOneDigit = (v) => {
+            if (v.length == 1) {
+                return "0" + v;
+            }
+            return v;
+        };
+
+        const todayDate = new Date();
+
+        return todayDate.getFullYear() + "-" +
+            appendZeroIfOneDigit((todayDate.getMonth()+1).toString()) + "-" +
+            appendZeroIfOneDigit(todayDate.getDate().toString());
+    }
+
     const initalState = {
-        stockId: stock.id, currency: "SGD", amount: "", addedDate: "2021-07-07"
+        stockId: stock.id, currency: "SGD", amount: "", addedDate: getTodayDate()
     };
 
     // form
@@ -64,7 +79,7 @@ export default function DividendAddingModal(props) {
     return (
         <Modal show={ showDividendAdd } onHide={ handleClose } animation={ false } size="sm">
             <Modal.Header closeButton>
-                <Modal.Title>Add Dividend - {stock.code} - {stock.name}</Modal.Title>
+                <Modal.Title>Add Dividend</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form ref={ formRef } id="dividendForm" noValidate validated={ validated }>
@@ -95,6 +110,19 @@ export default function DividendAddingModal(props) {
                                     placeholder="Enter dividend amount" 
                                     name="amount"
                                     value={formState.dividendAmount} 
+                                    onChange={ handleChange }/>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+
+                    <Row>
+                        <Col>
+                            <Form.Group controlId="formAddedDate">
+                                <Form.Label>Added Date (dd/MM/yyyy)</Form.Label>
+                                <Form.Control type="date" 
+                                    placeholder="Enter the date for this dividend" 
+                                    name="addedDate"
+                                    value={formState.addedDate} 
                                     onChange={ handleChange }/>
                             </Form.Group>
                         </Col>

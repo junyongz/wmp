@@ -56,7 +56,7 @@ export default function StockViewModal(props) {
     return (
         <Modal show={ showView } onHide={ handleClose } animation={ false } size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>Add New Stock: {code} ({name})</Modal.Title>
+                <Modal.Title>{code} ({name})</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Container fluid>
@@ -107,6 +107,13 @@ export default function StockViewModal(props) {
                         <Col>
                             <p>Market Unit Price $</p>
                             <p class="font-weight-bold">{marketUnitPrice}</p>
+                        </Col>
+                    </Row>
+
+                    <Row>
+                        <Col>
+                            <p>Added Since</p>
+                            <p class="font-weight-bold">{new Date(addedDate).toDateString()}</p>
                         </Col>
                     </Row>
 

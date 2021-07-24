@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { Modal, Form, Row, Col, Button } from 'react-bootstrap'
 import axios from 'axios'
 
@@ -7,10 +7,25 @@ export default function StockAddingModal(props) {
     // for creating stock
     const { dispatch, show, setShow } = props;
 
+    const getTodayDate = () => {
+        const appendZeroIfOneDigit = (v) => {
+            if (v.length == 1) {
+                return "0" + v;
+            }
+            return v;
+        };
+
+        const todayDate = new Date();
+
+        return todayDate.getFullYear() + "-" +
+            appendZeroIfOneDigit((todayDate.getMonth()+1).toString()) + "-" +
+            appendZeroIfOneDigit(todayDate.getDate().toString());
+    }
+
     const initalState = {
         code: "", name: "", marketPlace: "SGX", currency: "SGD",
         marketValue: "", investedAmount: "",
-        unitNumber: "", marketUnitPrice: "", investedUnitPrice: "", addedDate: "2021-07-07"
+        unitNumber: "", marketUnitPrice: "", investedUnitPrice: "", addedDate: getTodayDate()
     };
 
     // form
@@ -18,7 +33,17 @@ export default function StockAddingModal(props) {
 
     const [validated, setValidated] = useState(false);
 
-    const formRef = useRef(null);
+    // the ref
+    const formRef = useRef();
+
+    // for the invested ref
+    const investedAmountRef = useRef({value:undefined});
+    const unitNumberRef = useRef({value:undefined});
+    const investedUnitPriceRef = useRef({value:undefined});
+
+    // for market value ref
+    const marketValueRef = useRef({value:undefined});
+    const marketUnitPriceRef = useRef({value:undefined});
 
     // model events
     const handleClose = () => {
@@ -32,7 +57,38 @@ export default function StockAddingModal(props) {
         const name = target.name;
 
         setFormState(prevState => ({...prevState, [name]: value}));
+
+        defaultingValues();
     }
+
+    const defaultingValues = () => {
+        const investedAmount = investedAmountRef.current;
+        const unitNumber = unitNumberRef.current;
+
+        const investedUnitPrice = investedUnitPriceRef.current;
+
+        if (investedAmount && investedAmount.value && unitNumber && unitNumber.value) {
+            investedUnitPrice.value = investedAmount.value / unitNumber.value;
+
+            setFormState(prevState => ({...prevState, [investedUnitPrice.name]: investedUnitPrice.value}));
+        }
+
+        const marketValue = marketValueRef.current
+        if (investedAmount && investedAmount.value && marketValue && !marketValue.value) {
+            setTimeout(() => {
+                marketValue.value = investedAmount.value
+                setFormState(prevState => ({...prevState, [marketValue.name]: marketValue.value}));
+            }, 1500)
+        }
+
+        const marketUnitPrice = marketUnitPriceRef.current
+        if (investedUnitPrice && investedUnitPrice.value && marketUnitPrice && !marketUnitPrice.value) {
+            setTimeout(() => {
+                marketUnitPrice.value = investedUnitPrice.value
+                setFormState(prevState => ({...prevState, [marketUnitPrice.name]: marketUnitPrice.value}));
+            }, 1500)
+        }
+    };
 
     // main saving event
     const saveChangeAndClose = () => {
@@ -128,6 +184,7 @@ export default function StockAddingModal(props) {
                                     placeholder="Enter invested amount" 
                                     name="investedAmount"
                                     value={formState.investedAmount} 
+                                    ref={ investedAmountRef } 
                                     onChange={ handleChange }/>
                             </Form.Group>
                         </Col>
@@ -138,6 +195,7 @@ export default function StockAddingModal(props) {
                                     placeholder="Enter invested unit number" 
                                     name="unitNumber"
                                     value={formState.unitNumber} 
+                                    ref={ unitNumberRef }
                                     onChange={ handleChange }/>
                             </Form.Group>
                         </Col>
@@ -148,6 +206,7 @@ export default function StockAddingModal(props) {
                                     placeholder="Enter invested unit price" 
                                     name="investedUnitPrice"
                                     value={formState.investedUnitPrice} 
+                                    ref={ investedUnitPriceRef }
                                     onChange={ handleChange }/>
                             </Form.Group>
                         </Col>
@@ -161,6 +220,7 @@ export default function StockAddingModal(props) {
                                     placeholder="Enter market value (can be empty if unit number provided)" 
                                     name="marketValue"
                                     value={formState.marketValue} 
+                                    ref={ marketValueRef }
                                     onChange={ handleChange }/>
                             </Form.Group>
                         </Col>
@@ -171,6 +231,20 @@ export default function StockAddingModal(props) {
                                     placeholder="Enter market unit price" 
                                     name="marketUnitPrice"
                                     value={formState.marketUnitPrice} 
+                                    ref={ marketUnitPriceRef }
+                                    onChange={ handleChange }/>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+
+                    <Row>
+                        <Col xs="4">
+                            <Form.Group controlId="formAddedDate">
+                                <Form.Label>Added Date (dd/MM/yyyy)</Form.Label>
+                                <Form.Control type="date" 
+                                    placeholder="Enter the date for this invested stock" 
+                                    name="addedDate"
+                                    value={formState.addedDate} 
                                     onChange={ handleChange }/>
                             </Form.Group>
                         </Col>
