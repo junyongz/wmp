@@ -24,7 +24,7 @@ export default function StockListItems(props) {
                         <td>{v.currency}</td>
                         <td>{v.marketValue}</td>
                         <td>{v.investedAmount}</td>
-                        <td>{v.unitNumbber}</td>
+                        <td>{v.unitNumber}</td>
                         <td>{v.marketUnitPrice}</td>
                         <td>{v.investedUnitPrice}</td>
                     </tr>)

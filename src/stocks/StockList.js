@@ -11,7 +11,7 @@ import StockViewModal from './StockViewModal'
 const stockReducer = (state, action) => {
     switch (action.type) {
         case 'add':
-            return [ ...state, action.stock ];
+            return [ ...state.filter( stock => stock.id !== action.stock.id ), action.stock ];
 
         case 'all':
             return action.allStocks;

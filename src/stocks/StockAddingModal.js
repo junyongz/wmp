@@ -22,6 +22,13 @@ export default function StockAddingModal(props) {
     // the ref
     const formRef = useRef();
 
+    const stockCodeRef = useRef({value:undefined});
+    const stockNameRef = useRef({value:undefined});
+
+    // for market
+    const currencyRef = useRef({value:undefined});
+    const marketPlaceRef = useRef({value:undefined});
+
     // for the invested ref
     const investedAmountRef = useRef({value:undefined});
     const unitNumberRef = useRef({value:undefined});
@@ -76,6 +83,38 @@ export default function StockAddingModal(props) {
         }
     };
 
+    let stockCodeValue = (stockCodeRef && stockCodeRef.current && stockCodeRef.current.value) || 0;
+    useEffect(() => {
+        const marketPlaceValue = (marketPlaceRef && marketPlaceRef.current && marketPlaceRef.current.value) || 'SGX';
+
+        const searchStockTimeout = setTimeout(() => {
+            fetch('http://localhost:8080/stocks?search=by-code&code=' + stockCodeValue
+                    + "&marketPlace=" + marketPlaceValue, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors'
+            })
+            .then(res => res.json())
+            .then(stock => {
+                const stockName = stockNameRef.current;
+                stockName.value = stock.name;
+                setFormState(prevState => ({...prevState, [stockName.name]: stockName.value}))
+
+                stockNameRef.current.disabled = true;
+                currencyRef.current.disabled = true;
+                marketPlaceRef.current.disabled = true;
+            })
+            .catch(err => {
+                console.error('failed to find ', err)
+            })
+        }, 800);
+
+        return () => {
+            clearTimeout(searchStockTimeout);
+        }
+    }, [stockCodeValue]);
+
     // main saving event
     const saveChangeAndClose = () => {
         var form = formRef.current;
@@ -107,10 +146,10 @@ export default function StockAddingModal(props) {
         }
     }
 
-    return (
+    return (    
         <Modal show={ show } onHide={ handleClose } animation={ false } size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>Add New Stock</Modal.Title>
+                <Modal.Title>Invest Stock</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form ref={ formRef } id="stockForm" noValidate validated={ validated }>
@@ -122,6 +161,7 @@ export default function StockAddingModal(props) {
                                 placeholder="Enter stock code" 
                                 name="code"
                                 value={formState.code} 
+                                ref= { stockCodeRef }
                                 onChange={ handleChange }/>
                             </Form.Group>
                         </Col>
@@ -132,6 +172,7 @@ export default function StockAddingModal(props) {
                                 placeholder="Enter stock name" 
                                 name="name"
                                 value={formState.name} 
+                                ref={ stockNameRef }
                                 onChange={ handleChange }/>
                             </Form.Group>
                         </Col>
@@ -145,6 +186,7 @@ export default function StockAddingModal(props) {
                                     placeholder="Enter Currency" 
                                     name="currency"
                                     defaultValue="SGD" 
+                                    ref={ currencyRef }
                                     onChange={ handleChange }>
                                     <option>SGD</option>
                                     <option>USD</option>
@@ -161,6 +203,7 @@ export default function StockAddingModal(props) {
                                     placeholder="Enter market place" 
                                     name="marketPlace"
                                     defaultValue="SGX" 
+                                    ref={ marketPlaceRef }
                                     onChange={ handleChange }>
                                     <option value="SGX">Singapore Exchange</option>
                                     <option value="NYSE">New York Stock Exchange</option>
