@@ -4,14 +4,17 @@ export default function StockListItems(props) {
     
     // const items = useSelector((state) => state.stock.items) 
 
-    const { items, setShowView, setViewItem } = props;
-
-    const showViewDetailModal = (idx) => {
-        setShowView(true);
-        setViewItem(items[idx]);
-    }
+    const { items } = props;
 
     return useMemo(() => {
+
+        const { setShowView, setViewItem } = props;
+
+        const showViewDetailModal = (idx) => {
+            setShowView(true);
+            setViewItem(items[idx]);
+        }
+
         if (items.length > 0) {
             return items.map((v, i) =>
                     <tr key={v.id}> 
