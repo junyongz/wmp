@@ -4,12 +4,13 @@ import { Modal, Container, Row, Col, Table } from 'react-bootstrap'
 
 export default function StockHistoriesViewModal(props) {
 
-    const { stock, showStockHistoriesView, setShowStockHistoriesView } = props;
+    const { stock, reduceParentZIndex, restoreParentZIndex, showStockHistoriesView, setShowStockHistoriesView } = props;
 
     const [stockHistories, setStockHistories] = useState([]);
 
     const handleClose = () => {
         setShowStockHistoriesView(false);
+        restoreParentZIndex();
     }
 
     useEffect(() => {
@@ -30,7 +31,7 @@ export default function StockHistoriesViewModal(props) {
     }, [stock.id]);
 
     return (
-        <Modal show={ showStockHistoriesView } onHide={ handleClose } animation={ false } size="lg">
+        <Modal show={ showStockHistoriesView } onShow={ reduceParentZIndex } onHide={ handleClose } animation={ false } size="lg">
             <Modal.Header closeButton>
                 <Modal.Title>Investment Histories</Modal.Title>
             </Modal.Header>
