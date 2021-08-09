@@ -17,7 +17,7 @@ const stockReducer = (state, action) => {
             return action.allStocks;
         
         default:
-            throw new Error('no type provide: ' + action);
+            throw new Error('no type provided: ' + action);
     }
 }
 

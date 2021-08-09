@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Modal, Container, Row, Col, Button } from 'react-bootstrap'
 import DividendAddingModal from './DividendAddingModal';
+import StockHistoriesViewModal from './StockHistoriesViewModal';
 
 export default function StockViewModal(props) {
 
@@ -11,6 +12,8 @@ export default function StockViewModal(props) {
     const [dividendCurrency, setDividendCurrency] = useState('');
 
     const [showDividendAdd, setShowDividendAdd] = useState(false);
+
+    const [showStockHistoriesView, setShowStockHistoriesView] = useState(false);
 
     const {
         code, name, marketPlace, currency,
@@ -60,8 +63,15 @@ export default function StockViewModal(props) {
             </Modal.Header>
             <Modal.Body>
                 <Container fluid>
-                    <Row><Col><DividendAddingModal showDividendAdd={showDividendAdd} setShowDividendAdd={setShowDividendAdd} 
-                                    dividendAdded={dividendAdded} stock={item}/></Col></Row>
+                    <Row><Col><DividendAddingModal 
+                                    showDividendAdd={showDividendAdd} 
+                                    setShowDividendAdd={setShowDividendAdd} 
+                                    dividendAdded={dividendAdded} 
+                                    stock={item}/></Col></Row>
+                    <Row><Col><StockHistoriesViewModal 
+                                    showStockHistoriesView={showStockHistoriesView} 
+                                    setShowStockHistoriesView={setShowStockHistoriesView} 
+                                    stock={item}/></Col></Row>
                     <Row className="shadow-sm">
                         <Col>
                             <p>Code</p>
@@ -127,6 +137,9 @@ export default function StockViewModal(props) {
                 </Container>
             </Modal.Body>
             <Modal.Footer>
+            <Button variant="secondary" onClick={ () => setShowStockHistoriesView(true) }>
+                View Histories
+            </Button>
             <Button variant="secondary" onClick={ () => setShowDividendAdd(true) }>
                 Add Dividend
             </Button>
