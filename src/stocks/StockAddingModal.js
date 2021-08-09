@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Modal, Form, Row, Col, Button } from 'react-bootstrap'
 
 import getTodayDate from '../features/todayDate'
@@ -50,38 +50,53 @@ export default function StockAddingModal(props) {
         const name = target.name;
 
         setFormState(prevState => ({...prevState, [name]: value}));
-
-        defaultingValues();
     }
 
-    const defaultingValues = () => {
-        const investedAmount = investedAmountRef.current;
-        const unitNumber = unitNumberRef.current;
-
-        const investedUnitPrice = investedUnitPriceRef.current;
-
-        if (investedAmount && investedAmount.value && unitNumber && unitNumber.value) {
-            investedUnitPrice.value = investedAmount.value / unitNumber.value;
-
-            setFormState(prevState => ({...prevState, [investedUnitPrice.name]: investedUnitPrice.value}));
-        }
-
+    let investedAmountValue = (investedAmountRef && investedAmountRef.current && investedAmountRef.current.value) || 0;
+    let unitNumberValue = (unitNumberRef && unitNumberRef.current && unitNumberRef.current.value) || 0;
+    let investedUnitPriceValue = (investedUnitPriceRef && investedUnitPriceRef.current && investedUnitPriceRef.current.value) || 0;
+    useEffect(() => {
+        let marketValueTimeout;
         const marketValue = marketValueRef.current
-        if (investedAmount && investedAmount.value && marketValue && !marketValue.value) {
-            setTimeout(() => {
-                marketValue.value = investedAmount.value
+        if (investedAmountValue > 0 && marketValue && !marketValue.value) {
+            marketValueTimeout = setTimeout(() => {
+                marketValue.value = investedAmountValue
                 setFormState(prevState => ({...prevState, [marketValue.name]: marketValue.value}));
             }, 1500)
         }
 
+        let marketUnitPriceTimeout;
         const marketUnitPrice = marketUnitPriceRef.current
-        if (investedUnitPrice && investedUnitPrice.value && marketUnitPrice && !marketUnitPrice.value) {
-            setTimeout(() => {
-                marketUnitPrice.value = investedUnitPrice.value
+        if (investedUnitPriceValue > 0 && marketUnitPrice && !marketUnitPrice.value) {
+            marketUnitPriceTimeout =  setTimeout(() => {
+                marketUnitPrice.value = investedUnitPriceValue
                 setFormState(prevState => ({...prevState, [marketUnitPrice.name]: marketUnitPrice.value}));
-            }, 1500)
+            }, 1500);
         }
-    };
+
+        return (() => {
+            clearTimeout(marketValueTimeout);
+            clearTimeout(marketUnitPriceTimeout);
+        })
+
+    }, [investedAmountValue, investedUnitPriceValue])
+
+    useEffect(() => {
+        let investedUnitPriceTimeout;
+
+        const investedUnitPrice = investedUnitPriceRef.current
+        if (investedAmountValue > 0 && unitNumberValue > 0 && investedUnitPrice) {
+            investedUnitPriceTimeout =  setTimeout(() => {
+                investedUnitPrice.value = (investedAmountValue / unitNumberValue).toFixed(3);
+                setFormState(prevState => ({...prevState, [investedUnitPrice.name]: investedUnitPrice.value}));
+            }, 800);
+        }
+
+        return (() => {
+            clearTimeout(investedUnitPriceTimeout);
+        })
+
+    }, [investedAmountValue, unitNumberValue])
 
     let stockCodeValue = (stockCodeRef && stockCodeRef.current && stockCodeRef.current.value) || 0;
     useEffect(() => {
