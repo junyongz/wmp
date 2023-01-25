@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react'
+import './StockViewModal.css';
+
+import { useEffect, useState, useRef } from 'react'
 import { Modal, Container, Row, Col, Button } from 'react-bootstrap'
 import DividendAddingModal from './DividendAddingModal';
+import StockHistoriesViewModal from './StockHistoriesViewModal';
 
 export default function StockViewModal(props) {
 
@@ -11,6 +14,22 @@ export default function StockViewModal(props) {
     const [dividendCurrency, setDividendCurrency] = useState('');
 
     const [showDividendAdd, setShowDividendAdd] = useState(false);
+
+    const [showStockHistoriesView, setShowStockHistoriesView] = useState(false);
+
+    const modalRef = useRef();
+
+    const reduceParentZIndex = () => {
+        if (modalRef && modalRef.current) {
+            modalRef.current._modal.dialog.classList.add('modal-over-modal')
+        }
+    }
+
+    const restoreParentZIndex = () => {
+        if (modalRef && modalRef.current) {
+            modalRef.current._modal.dialog.classList.remove('modal-over-modal')
+        }
+    }
 
     const {
         code, name, marketPlace, currency,
@@ -54,14 +73,25 @@ export default function StockViewModal(props) {
     }, [item])
 
     return (
-        <Modal show={ showView } onHide={ handleClose } animation={ false } size="lg">
+        <Modal ref={ modalRef } show={ showView } onHide={ handleClose } animation={ false } size="lg">
             <Modal.Header closeButton>
                 <Modal.Title>{code} ({name})</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Container fluid>
-                    <Row><Col><DividendAddingModal showDividendAdd={showDividendAdd} setShowDividendAdd={setShowDividendAdd} 
-                                    dividendAdded={dividendAdded} stock={item}/></Col></Row>
+                    <Row><Col><DividendAddingModal 
+                                    showDividendAdd={showDividendAdd} 
+                                    setShowDividendAdd={setShowDividendAdd} 
+                                    dividendAdded={dividendAdded} 
+                                    reduceParentZIndex={reduceParentZIndex}
+                                    restoreParentZIndex={restoreParentZIndex}
+                                    stock={item}/></Col></Row>
+                    <Row><Col><StockHistoriesViewModal 
+                                    showStockHistoriesView={showStockHistoriesView} 
+                                    setShowStockHistoriesView={setShowStockHistoriesView} 
+                                    reduceParentZIndex={reduceParentZIndex}
+                                    restoreParentZIndex={restoreParentZIndex}
+                                    stock={item}/></Col></Row>
                     <Row className="shadow-sm">
                         <Col>
                             <p>Code</p>
@@ -127,10 +157,13 @@ export default function StockViewModal(props) {
                 </Container>
             </Modal.Body>
             <Modal.Footer>
-            <Button variant="secondary" onClick={ () => setShowDividendAdd(true) }>
+            <Button variant="secondary" onClick={ () => setShowStockHistoriesView(true) }>
+                View Histories
+            </Button>
+            <Button variant="primary" onClick={ () => setShowDividendAdd(true) }>
                 Add Dividend
             </Button>
-            <Button variant="primart" onClick={ handleClose }>
+            <Button variant="link" onClick={ handleClose }>
                 Close
             </Button>
             </Modal.Footer>

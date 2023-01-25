@@ -307,11 +307,11 @@ export default function StockAddingModal(props) {
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-            <Button variant="secondary" onClick={ handleClose }>
-                Close
-            </Button>
             <Button variant="primary" onClick={ saveChangeAndClose }>
                 Save Changes
+            </Button>
+            <Button variant="link" onClick={ handleClose }>
+                Close
             </Button>
             </Modal.Footer>
         </Modal>

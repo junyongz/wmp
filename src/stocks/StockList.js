@@ -17,7 +17,7 @@ const stockReducer = (state, action) => {
             return action.allStocks;
         
         default:
-            throw new Error('no type provide: ' + action);
+            throw new Error('no type provided: ' + action);
     }
 }
 
@@ -79,7 +79,7 @@ export default function StockList() {
             </Row>
             <Row className="mb-2 float-right">
                 <Col>
-                    <Button onClick={ () => setShow(true) } variant="dark">Invest</Button>
+                    <Button onClick={ () => setShow(true) } variant="primary">Invest</Button>
                 </Col>
             </Row>
             <Row>

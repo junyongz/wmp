@@ -6,7 +6,7 @@ import getTodayDate from '../features/todayDate'
 export default function DividendAddingModal(props) {
 
     // for creating dividend
-    const { showDividendAdd, setShowDividendAdd, dividendAdded, stock } = props;
+    const { reduceParentZIndex, restoreParentZIndex, showDividendAdd, setShowDividendAdd, dividendAdded, stock } = props;
 
     const initalState = {
         stockId: stock.id, currency: "SGD", amount: "", addedDate: getTodayDate()
@@ -23,6 +23,7 @@ export default function DividendAddingModal(props) {
     const handleClose = () => {
         setValidated(false);
         setShowDividendAdd(false);
+        restoreParentZIndex();
     };
 
     const handleChange = (event) => {
@@ -64,7 +65,7 @@ export default function DividendAddingModal(props) {
     }
 
     return (
-        <Modal show={ showDividendAdd } onHide={ handleClose } animation={ false } size="sm">
+        <Modal show={ showDividendAdd } onShow={reduceParentZIndex} onHide={ handleClose } animation={ false } size="sm">
             <Modal.Header closeButton>
                 <Modal.Title>Add Dividend</Modal.Title>
             </Modal.Header>
@@ -118,11 +119,11 @@ export default function DividendAddingModal(props) {
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-            <Button variant="secondary" onClick={ handleClose }>
-                Close
-            </Button>
             <Button variant="primary" onClick={ saveChangeAndClose }>
-                Save Changes
+                Save
+            </Button>
+            <Button variant="link" onClick={ handleClose }>
+                Close
             </Button>
             </Modal.Footer>
         </Modal>
