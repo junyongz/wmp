@@ -21,8 +21,8 @@ const stockReducer = (state, action) => {
     }
 }
 
-/* sample data
-const stocks = [
+// sample data
+const defaultStocks = [
     {
         code: "G3B.SI", name: "STI ETF", marketPlace: "SGX", currency: "SGD",
         marketValue: "30000", investedAmount: "25000",
@@ -33,7 +33,7 @@ const stocks = [
         marketValue: "40000", investedAmount: "50000",
         investedUnit: "10000", marketUnitPrice: "4", investedUnitPrice: "5"
     }
-]; */
+];
 
 export default function StockList() {
 
@@ -49,8 +49,8 @@ export default function StockList() {
                 dispatch({ type: "all", allStocks: allStocks });
             })
             .catch(err => {
-                console.error('failed to get all stocks', err);
-                alert(err);
+                console.error('failed to get all stocks; using any default stocks', err);
+                dispatch({ type: "all", allStocks: defaultStocks});
             });
     }, []);
 
@@ -71,10 +71,10 @@ export default function StockList() {
         <Container fluid="xl">
             <Row>
                 <Col>
-                    <StockAddingModal show={show} setShow={setShow} items={items} dispatch={dispatch}/>
+                    <StockAddingModal { ...{ show, setShow, items, dispatch } } />
                 </Col>
                 <Col>
-                    <StockViewModal showView={showView} setShowView={setShowView} item={viewItem}/>
+                    <StockViewModal { ...{ showView, setShowView, item: viewItem } } />
                 </Col>
             </Row>
             <Row className="mb-2 float-right">
@@ -100,8 +100,7 @@ export default function StockList() {
                             </tr>
                         </thead>
                         <tbody>
-                            <StockListItems items={ items } showView={showView} 
-                                setShowView={setShowView} setViewItem={ setViewItem }/>
+                            <StockListItems { ...{ items, showView, setShowView, setViewItem } }/>
                         </tbody>
                     </Table>
                 </Col>
